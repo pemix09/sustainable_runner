@@ -60,6 +60,16 @@ class MainMenuScreen extends StatelessWidget {
             ),
             _gap,
             WobblyButton(
+              onPressed: () => GoRouter.of(context).push('/achievements'),
+              child: const Text('Achievements'),
+            ),
+            _gap,
+            WobblyButton(
+              onPressed: () => GoRouter.of(context).push('/store'),
+              child: const Text('Store'),
+            ),
+            _gap,
+            WobblyButton(
               onPressed: () => GoRouter.of(context).push('/settings'),
               child: const Text('Settings'),
             ),

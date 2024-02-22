@@ -1,3 +1,6 @@
+import 'package:endless_runner/achievements/achievements_screen.dart';
+import 'package:endless_runner/store/store_screen.dart';
+
 import 'flame_game/game_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +44,18 @@ final router = GoRouter(
               },
             ),
           ],
+        ),
+        GoRoute(
+          path: 'achievements',
+          builder: (context, state) => const AchievementsScreen(
+            key: Key('achievements'),
+          ),
+        ),
+        GoRoute(
+          path: 'store',
+          builder: (context, state) => const StoreScreen(
+            key: Key('store'),
+          ),
         ),
         GoRoute(
           path: 'settings',
