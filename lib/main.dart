@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nes_ui/nes_ui.dart';
 import 'package:provider/provider.dart';
-
 import 'router.dart';
 import 'app_lifecycle/app_lifecycle.dart';
 import 'audio/audio_controller.dart';
@@ -13,13 +12,16 @@ import 'style/palette.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Flame.device.setLandscape();
+  await Flame.device.setPortrait();
   await Flame.device.fullScreen();
-  runApp(const MyGame());
+
+  runApp(
+    const SustainableRunnerGame(),
+  );
 }
 
-class MyGame extends StatelessWidget {
-  const MyGame({super.key});
+class SustainableRunnerGame extends StatelessWidget {
+  const SustainableRunnerGame({super.key});
 
   @override
   Widget build(BuildContext context) {

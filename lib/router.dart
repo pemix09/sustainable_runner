@@ -1,11 +1,9 @@
 import 'package:endless_runner/achievements/achievements_screen.dart';
+import 'package:endless_runner/game/game_screen.dart';
 import 'package:endless_runner/store/store_screen.dart';
-
-import 'flame_game/game_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import 'level_selection/level_selection_screen.dart';
 import 'level_selection/levels.dart';
 import 'main_menu/main_menu_screen.dart';
@@ -39,7 +37,7 @@ final router = GoRouter(
                 return buildPageTransition<void>(
                   key: const ValueKey('level'),
                   color: context.watch<Palette>().backgroundPlaySession.color,
-                  child: GameScreen(level: level),
+                  child: GameScreen(),
                 );
               },
             ),
