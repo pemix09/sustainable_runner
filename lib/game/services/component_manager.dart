@@ -28,34 +28,6 @@ class ComponentManager extends Component {
     add(PlayerManager(spriteSheet: spriteSheet));
   }
 
-  void checkEnemyHits() {
-    if (enemyManager == null || enemyManager!.enemies.isEmpty ||
-        bulletManager == null || bulletManager!.bullets.isEmpty ||
-        playerManager == null || playerManager!.player == null) {
-      return;
-    }
-
-    for (final enemy in enemyManager!.enemies) {
-      if (enemy.isRemoving || enemy.isRemoved) {
-        continue;
-      }
-      if (playerManager!.player != null && playerManager!.player!.containsPoint(enemy.absoluteCenter)) {
-        print('Enemy hit us! ${DateTime.now()}');
-      }
-      for (final bullet in bulletManager!.bullets) {
-        if (bullet.isRemoving || bullet.isRemoved) {
-          continue;
-        }
-
-        if (enemy.containsPoint(bullet.absoluteCenter)) {
-          enemyManager!.remove(enemy);
-          bulletManager!.remove(bullet);
-          break;
-        }
-      }
-    }
-  }
-
   void shoot() {
     bulletManager?.add(
       Bullet(
