@@ -15,7 +15,7 @@ class PlayerManager extends Component with HasGameRef<SustainableRunner> {
       Player(
         sprite: spriteSheet.getSpriteById(2),
         size: Vector2(64, 64),
-        position: game.canvasSize / 2,
+        position: Vector2(game.canvasSize.x / 2, game.canvasSize.y - 100),
       )..anchor = Anchor.center,
     );
   }

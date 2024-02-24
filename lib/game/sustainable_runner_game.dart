@@ -1,5 +1,6 @@
 import 'package:endless_runner/game/objects/bullet.dart';
 import 'package:endless_runner/game/objects/enemy.dart';
+import 'package:endless_runner/game/screens/game_screen.dart';
 import 'package:endless_runner/game/services/component_manager.dart';
 import 'package:endless_runner/game/services/enemy_manager.dart';
 import 'package:endless_runner/game/worlds/game_world.dart';
@@ -9,10 +10,13 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame/text.dart';
+import 'package:flutter/material.dart';
 
 class SustainableRunner extends FlameGame<GameWorld>
     with HasCollisionDetection, HorizontalDragDetector, TapDetector {
   late SpriteSheet _spriteSheet;
+  late TextComponent _playerScore;
 
   ComponentManager? get componentManager =>
       children.whereType<ComponentManager>().firstOrNull;
@@ -36,6 +40,13 @@ class SustainableRunner extends FlameGame<GameWorld>
 
     var componentManager = ComponentManager(spriteSheet: _spriteSheet);
     add(componentManager);
+
+    _playerScore = TextComponent(
+      text: 'Score: 0',
+      position: Vector2(canvasSize.x - 100, 50),
+    );
+
+    add(_playerScore);
   }
 
   @override
@@ -56,5 +67,29 @@ class SustainableRunner extends FlameGame<GameWorld>
     if (componentManager != null && componentManager!.isLoaded) {
       componentManager!.shoot();
     }
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _playerScore.text =
+        'Score: ${componentManager?.playerManager?.player?.score}';
+    overlays.remove(GameScreen.healthBar);
+    overlays.add(GameScreen.healthBar);
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    // When the world is mounted in the game we add a back button widget as an
+    // overlay so that the player can go back to the previous screen.
+    overlays.add(GameScreen.healthBar);
+    overlays.add(GameScreen.pauseButton);
+  }
+
+  @override
+  void onRemove() {
+    overlays.remove(GameScreen.healthBar);
+    overlays.remove(GameScreen.pauseButton);
   }
 }

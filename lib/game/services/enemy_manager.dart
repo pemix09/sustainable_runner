@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:endless_runner/game/objects/enemy.dart';
+import 'package:endless_runner/game/services/component_manager.dart';
 import 'package:endless_runner/game/sustainable_runner_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -43,5 +44,11 @@ class EnemyManager extends Component with HasGameRef<SustainableRunner> {
   void update(double dt) {
     super.update(dt);
     _timer.update(dt);
+  }
+
+  void enemyHit() {
+    if (parent != null && parent is ComponentManager) {
+      (parent as ComponentManager).enemyHit();
+    }
   }
 }

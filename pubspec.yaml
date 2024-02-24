@@ -23,6 +23,7 @@ dependencies:
   nes_ui: ^0.15.0
   google_fonts: ^6.1.0
   logging: ^1.2.0
+  flame_noise: ^0.2.0
 
 dev_dependencies:
   flame_test: ^1.15.3

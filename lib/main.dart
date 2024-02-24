@@ -49,6 +49,7 @@ class SustainableRunnerGame extends StatelessWidget {
           final palette = context.watch<Palette>();
 
           return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
             title: 'Endless Runner',
             theme: flutterNesTheme().copyWith(
               colorScheme: ColorScheme.fromSeed(

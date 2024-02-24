@@ -37,4 +37,8 @@ class ComponentManager extends Component {
       )..anchor = Anchor.center,
     );
   }
+
+  void enemyHit() {
+    playerManager?.player?.score++;
+  }
 }
