@@ -1,3 +1,4 @@
+import 'package:endless_runner/game/services/component_manager.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

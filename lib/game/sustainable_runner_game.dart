@@ -1,19 +1,21 @@
-import 'package:endless_runner/game/game_world.dart';
-import 'package:endless_runner/game/knows_game_size.dart';
-import 'package:endless_runner/game/move_direction.dart';
+import 'package:endless_runner/game/objects/bullet.dart';
+import 'package:endless_runner/game/objects/enemy.dart';
+import 'package:endless_runner/game/services/component_manager.dart';
+import 'package:endless_runner/game/services/enemy_manager.dart';
+import 'package:endless_runner/game/worlds/game_world.dart';
 import 'package:endless_runner/game/objects/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
 
 class SustainableRunner extends FlameGame<GameWorld>
-    with HasCollisionDetection, HorizontalDragDetector {
-  late Player player;
-  int numberOfLines = 5;
-  int currentLine = 3;
+    with HasCollisionDetection, HorizontalDragDetector, TapDetector {
+  late SpriteSheet _spriteSheet;
+
+  ComponentManager? get componentManager =>
+      children.whereType<ComponentManager>().firstOrNull;
 
   SustainableRunner()
       : super(
@@ -26,62 +28,41 @@ class SustainableRunner extends FlameGame<GameWorld>
     const spriteSheetFileName = 'simpleSpace_sheet@2.png';
     await images.load(spriteSheetFileName);
 
-    final spriteSheet = SpriteSheet.fromColumnsAndRows(
+    _spriteSheet = SpriteSheet.fromColumnsAndRows(
       image: images.fromCache(spriteSheetFileName),
       columns: 9,
       rows: 5,
     );
 
-    player = Player(
-      sprite: spriteSheet.getSpriteById(2),
-      size: Vector2(64, 64),
-      position: canvasSize / 2,
-    );
-
-    player.anchor = Anchor.center;
-
-    add(player);
-
+    var componentManager = ComponentManager(spriteSheet: _spriteSheet);
+    add(componentManager);
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-  }
-
-  @override
-  void onGameResize(Vector2 size) {
-    print('Game resizing');
-
-    for (var child in children.whereType<KnowsGameSize>()) {
-      child.onResize(size);
+  void update(double dt) {
+    super.update(dt);
+    if (componentManager != null && componentManager!.isLoaded) {
+      componentManager!.checkEnemyHits();
     }
-    super.onGameResize(size);
   }
 
   @override
   void onHorizontalDragEnd(DragEndInfo info) {
-    print(info.velocity.x < 0 ? 'left swipe' : 'right swipe');
-    var playerMoveDirection =
-        info.velocity.x < 0 ? MoveDirection.left : MoveDirection.right;
-    if (playerMoveDirection == MoveDirection.left) {
-      player.moveDirection = moveLeftVector();
-    } else {
-      player.moveDirection = moveRightVector();
+    if (componentManager != null) {
+      if (info.velocity.x < 0) {
+        componentManager!.playerManager?.player?.moveLeft();
+      } else {
+        componentManager!.playerManager?.player?.moveRight();
+      }
     }
   }
 
-  Vector2 moveLeftVector() {
-    if (currentLine > 1) {
-      currentLine--;
-    }
-    return Vector2(-20, 0);
-  }
+  @override
+  void onTapDown(TapDownInfo info) {
+    super.onTapDown(info);
 
-  Vector2 moveRightVector() {
-    if (currentLine < 4) {
-      currentLine++;
+    if (componentManager != null && componentManager!.isLoaded) {
+      componentManager!.shoot();
     }
-    return Vector2(20, 0);
   }
 }

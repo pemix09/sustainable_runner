@@ -1,5 +1,5 @@
 import 'package:endless_runner/achievements/achievements_screen.dart';
-import 'package:endless_runner/game/game_screen.dart';
+import 'package:endless_runner/game/screens/game_screen.dart';
 import 'package:endless_runner/store/store_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';

@@ -1,8 +1,8 @@
 import 'package:endless_runner/game/sustainable_runner_game.dart';
 
-import '../audio/audio_controller.dart';
-import '../level_selection/levels.dart';
-import '../player_progress/player_progress.dart';
+import '../../audio/audio_controller.dart';
+import '../../level_selection/levels.dart';
+import '../../player_progress/player_progress.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

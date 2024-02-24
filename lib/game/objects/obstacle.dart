@@ -1,16 +1,18 @@
-import 'package:endless_runner/game/knows_game_size.dart';
+import 'package:endless_runner/game/sustainable_runner_game.dart';
 import 'package:flame/components.dart';
 
-class Obstacle extends SpriteComponent with KnowsGameSize {
+class Obstacle extends SpriteComponent with HasGameRef<SustainableRunner> {
   double _speed = 250;
 
-  Obstacle({Sprite? sprite, Vector2? position, Vector2? size, })
-      : super(sprite: sprite, position: position, size: size,) {
-  }
+  Obstacle({super.sprite, super.position, super.size, });
 
   @override
   void update(double dt) {
     super.update(dt);
-    this.position += Vector2(0, 1) * _speed * dt;
+    position += Vector2(0, 1) * _speed * dt;
+
+    if (position.y > game.size.y) {
+      parent?.remove(this);
+    }
   }
 }
