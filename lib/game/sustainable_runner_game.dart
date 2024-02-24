@@ -39,14 +39,6 @@ class SustainableRunner extends FlameGame<GameWorld>
   }
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    if (componentManager != null && componentManager!.isLoaded) {
-      componentManager!.checkEnemyHits();
-    }
-  }
-
-  @override
   void onHorizontalDragEnd(DragEndInfo info) {
     if (componentManager != null) {
       if (info.velocity.x < 0) {
