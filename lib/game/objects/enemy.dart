@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 class Enemy extends SpriteComponent with HasGameRef<SustainableRunner>, CollisionCallbacks {
   double _speed = 250;
 
-  Enemy({super.sprite, super.position, super.size, }) {
+  Enemy({super.sprite, super.position, super.size, }) : super(priority: 1) {
     angle = pi / 4;
   }
 
@@ -26,9 +26,6 @@ class Enemy extends SpriteComponent with HasGameRef<SustainableRunner>, Collisio
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is Bullet && parent != null && parent is EnemyManager) {
-      (parent as EnemyManager).enemyHit();
-    }
 
     final particleComponent = ParticleSystemComponent(
       particle: Particle.generate(

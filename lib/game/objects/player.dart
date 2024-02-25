@@ -1,13 +1,9 @@
-import 'dart:math';
 import 'package:endless_runner/game/effects/move_effect.dart';
 import 'package:endless_runner/game/objects/enemy.dart';
 import 'package:endless_runner/game/screens/game_screen.dart';
 import 'package:endless_runner/game/sustainable_runner_game.dart';
-import 'package:endless_runner/game/worlds/game_world.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/particles.dart';
-import 'package:flutter/material.dart';
 
 enum PlayerState {
   running,
@@ -18,9 +14,10 @@ enum PlayerState {
 
 class Player extends SpriteAnimationGroupComponent<PlayerState>
     with HasGameRef<SustainableRunner>, CollisionCallbacks {
-  double _playerSpeed = 300;
+  final double _playerSpeed = 300;
   final Vector2 _lastPosition = Vector2.zero();
   final double walkingSpeed = 0.1;
+
   // The current velocity that the player has that comes from being affected by
   // the gravity. Defined in virtual pixels/s².
   double _gravityVelocity = 0;
@@ -28,7 +25,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   int health = 3;
 
   double get playerBottomYPos => position.y + size.y / 2;
-  bool get inAir => playerBottomYPos < game.groundLevel;
+
+  bool get inAir => playerBottomYPos < game.world.groundLevel;
+
   bool get isFalling => _lastPosition.y < position.y;
 
   Player({
@@ -38,10 +37,13 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   @override
   Future<void> onLoad() async {
-    print('Player position y: ${position.y}');
-    print('Player absolute position y: ${absolutePosition.y}');
-    print('game ground level: ${game.groundLevel}');
-    print('In air condition value: ${(position.y + size.y / 2)}');
+    if (position == Vector2.zero()) {
+      position = Vector2(game.canvasSize.x / 2, 0);
+    }
+    if (size == Vector2.zero()) {
+      size = Vector2(64, 64);
+    }
+
     final sprites = <Sprite>[];
     sprites.add(await game.loadSprite('tile_0355.png'));
     sprites.add(await game.loadSprite('tile_0356.png'));
@@ -78,19 +80,19 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     position.clamp(Vector2.zero() + size / 2, game.canvasSize - size / 2);
 
     if (inAir) {
-      _gravityVelocity += game.gravity * dt;
+      _gravityVelocity += game.world.gravity * dt;
       position.y += _gravityVelocity;
       if (isFalling) {
         current = PlayerState.falling;
       }
     }
 
-    final belowGround = playerBottomYPos > game.groundLevel;
+    final belowGround = playerBottomYPos > game.world.groundLevel;
     // If the player's new position would overshoot the ground level after
     // updating its position we need to move the player up to the ground level
     // again.
     if (belowGround) {
-      position.y = game.groundLevel - size.y / 2;
+      position.y = game.world.groundLevel - size.y / 2;
       _gravityVelocity = 0;
       current = PlayerState.running;
     }
@@ -103,7 +105,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     super.onCollision(intersectionPoints, other);
 
     if (other is Enemy) {
-      health --;
+      health--;
 
       if (health == 0) {
         game.pauseEngine();

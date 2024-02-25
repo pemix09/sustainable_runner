@@ -57,7 +57,7 @@ class GameScreen extends StatelessWidget {
               },
               healthBar: (context, game) {
                 var playerHealth =
-                    game.componentManager?.playerManager?.player?.health;
+                    game.playerManager.player?.health;
 
                 if (playerHealth != null) {
                   var healthIcons = <Widget>[];

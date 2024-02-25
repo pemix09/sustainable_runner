@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^6.1.0
   logging: ^1.2.0
   flame_noise: ^0.2.0
+  flame_tiled: ^1.18.4
 
 dev_dependencies:
   flame_test: ^1.15.3

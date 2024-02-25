@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../audio/audio_controller.dart';
 import '../level_selection/levels.dart';
 import '../player_progress/player_progress.dart';
-import 'components/background.dart';
+import 'components/background_parralax.dart';
 import 'endless_world.dart';
 
 /// This is the base of the game which is added to the [GameWidget].
@@ -43,7 +43,7 @@ class EndlessRunner extends FlameGame<EndlessWorld> with HasCollisionDetection {
   Future<void> onLoad() async {
     // The backdrop is a static layer behind the world that the camera is
     // looking at, so here we add our parallax background.
-    camera.backdrop.add(Background(speed: world.speed));
+    camera.backdrop.add(BackgroundParallax(speed: world.speed));
 
     // With the `TextPaint` we define what properties the text that we are going
     // to render will have, like font family, size and color in this instance.
