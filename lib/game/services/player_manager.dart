@@ -1,12 +1,13 @@
 import 'package:endless_runner/game/objects/player.dart';
 import 'package:endless_runner/game/sustainable_runner_game.dart';
-import 'package:endless_runner/game/worlds/game_world.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:flutter/widgets.dart';
 
 class PlayerManager extends Component with HasGameRef<SustainableRunner> {
   late final SpriteSheet _playerSpriteSheet;
   late final Player player;
+  final scoreNotifier = ValueNotifier(0);
 
   @override
   Future<void> onLoad() async {
@@ -39,5 +40,9 @@ class PlayerManager extends Component with HasGameRef<SustainableRunner> {
 
   void playerJump() {
     player.jump(Vector2(0, -150));
+  }
+
+  void addScore({int amount = 1}) {
+    scoreNotifier.value += amount;
   }
 }

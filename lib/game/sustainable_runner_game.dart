@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 class SustainableRunner extends FlameGame<GameWorld>
     with HasCollisionDetection, HorizontalDragDetector, TapDetector {
   late TextComponent _playerScore;
-  final scoreNotifier = ValueNotifier(0);
   late final DateTime timeStarted;
   late final EnemyManager enemyManager;
   late final PlayerManager playerManager;
@@ -39,21 +38,8 @@ class SustainableRunner extends FlameGame<GameWorld>
     );
 
     add(_playerScore);
-    //camera.backdrop.add(Background(speed: 200));
 
-    scoreNotifier.addListener(() {
-      if (scoreNotifier.value >= 20) {
-        final levelTime = (DateTime.now().millisecondsSinceEpoch -
-                timeStarted.millisecondsSinceEpoch) /
-            1000;
-
-        var levelCompletedIn = levelTime.round();
-        print('Level completed in: $levelCompletedIn');
-
-        pauseEngine();
-        overlays.add(GameScreen.winDialogKey);
-      }
-    });
+    playerManager.scoreNotifier.addListener(handleScoreChange);
   }
 
   @override
@@ -69,12 +55,12 @@ class SustainableRunner extends FlameGame<GameWorld>
   void onTapDown(TapDownInfo info) {
     super.onTapDown(info);
     playerManager.playerJump();
+    playerManager.addScore();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    _playerScore.text = 'Score: 0';
     overlays.remove(GameScreen.healthBar);
     overlays.add(GameScreen.healthBar);
   }
@@ -103,5 +89,21 @@ class SustainableRunner extends FlameGame<GameWorld>
     add(enemyManager);
     add(playerManager);
     add(trashManager);
+  }
+
+  void handleScoreChange() {
+    _playerScore.text = 'Score: ${playerManager.scoreNotifier.value}';
+
+    if (playerManager.scoreNotifier.value >= 20) {
+      final levelTime = (DateTime.now().millisecondsSinceEpoch -
+          timeStarted.millisecondsSinceEpoch) /
+          1000;
+
+      var levelCompletedIn = levelTime.round();
+      print('Level completed in: $levelCompletedIn');
+
+      pauseEngine();
+      overlays.add(GameScreen.winDialogKey);
+    }
   }
 }
