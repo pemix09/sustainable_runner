@@ -78,9 +78,7 @@ class GameScreen extends StatelessWidget {
                 return const Text('Problem loading health');
               },
               winDialogKey: (BuildContext context, SustainableRunner game) {
-                return GameWinDialog(
-                  levelCompletedIn: game.world.levelCompletedIn,
-                );
+                return GameWinDialog();
               },
               lostDialogKey: (BuildContext context, SustainableRunner game) {
                 return GameLostDialog();

@@ -1,4 +1,3 @@
-import 'package:endless_runner/flame_game/components/player.dart';
 import 'package:endless_runner/game/objects/bullet.dart';
 import 'package:endless_runner/game/services/bullet_manager.dart';
 import 'package:endless_runner/game/services/enemy_manager.dart';

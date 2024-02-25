@@ -10,11 +10,7 @@ import 'package:nes_ui/nes_ui.dart';
 class GameWinDialog extends StatelessWidget {
   const GameWinDialog({
     super.key,
-    required this.levelCompletedIn,
   });
-
-  /// How many seconds that the level was completed in.
-  final int levelCompletedIn;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +29,7 @@ class GameWinDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'You completed level in $levelCompletedIn seconds.',
+              'You completed level.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),

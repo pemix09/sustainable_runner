@@ -19,7 +19,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks {
     super.onCollision(intersectionPoints, other);
 
     if (other is Enemy) {
-      parent?.remove(this);
+      removeFromParent();
     }
   }
 

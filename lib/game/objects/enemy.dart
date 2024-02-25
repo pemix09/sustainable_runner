@@ -56,12 +56,7 @@ class Enemy extends SpriteComponent with HasGameRef<SustainableRunner>, Collisio
     position += Vector2(0, 1) * _speed * dt;
 
     if (position.y > game.canvasSize.y) {
-      parent?.remove(this);
+      removeFromParent();
     }
-  }
-
-  @override
-  void onRemove() {
-    print('Removing enemy, $this, on: ${DateTime.now()}');
   }
 }

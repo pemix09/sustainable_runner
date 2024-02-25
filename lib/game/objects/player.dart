@@ -1,26 +1,70 @@
 import 'dart:math';
+import 'package:endless_runner/game/effects/move_effect.dart';
 import 'package:endless_runner/game/objects/enemy.dart';
 import 'package:endless_runner/game/screens/game_screen.dart';
 import 'package:endless_runner/game/sustainable_runner_game.dart';
+import 'package:endless_runner/game/worlds/game_world.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 import 'package:flame/particles.dart';
-import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
 
-class Player extends SpriteComponent
+enum PlayerState {
+  running,
+  jumping,
+  falling,
+  collectingGarbage,
+}
+
+class Player extends SpriteAnimationGroupComponent<PlayerState>
     with HasGameRef<SustainableRunner>, CollisionCallbacks {
-  Vector2 _moveVector = Vector2.zero();
   double _playerSpeed = 300;
+  final Vector2 _lastPosition = Vector2.zero();
+  final double walkingSpeed = 0.1;
+  // The current velocity that the player has that comes from being affected by
+  // the gravity. Defined in virtual pixels/s².
+  double _gravityVelocity = 0;
   int score = 0;
   int health = 3;
 
+  double get playerBottomYPos => position.y + size.y / 2;
+  bool get inAir => playerBottomYPos < game.groundLevel;
+  bool get isFalling => _lastPosition.y < position.y;
+
   Player({
-    super.sprite,
     super.position,
     super.size,
-  });
+  }) : super(priority: 1);
+
+  @override
+  Future<void> onLoad() async {
+    print('Player position y: ${position.y}');
+    print('Player absolute position y: ${absolutePosition.y}');
+    print('game ground level: ${game.groundLevel}');
+    print('In air condition value: ${(position.y + size.y / 2)}');
+    final sprites = <Sprite>[];
+    sprites.add(await game.loadSprite('tile_0355.png'));
+    sprites.add(await game.loadSprite('tile_0356.png'));
+    sprites.add(await game.loadSprite('tile_0357.png'));
+
+    animations = {
+      PlayerState.running: SpriteAnimation.spriteList(
+        sprites,
+        stepTime: walkingSpeed,
+      ),
+      PlayerState.jumping: SpriteAnimation.spriteList(
+        sprites,
+        stepTime: double.infinity,
+      ),
+      PlayerState.falling: SpriteAnimation.spriteList(
+        sprites,
+        stepTime: double.infinity,
+      ),
+    };
+    // The starting state will be that the player is running.
+    current = PlayerState.running;
+    _lastPosition.setFrom(position);
+  }
 
   @override
   void onMount() {
@@ -31,27 +75,27 @@ class Player extends SpriteComponent
   @override
   void update(double dt) {
     super.update(dt);
-    position += _moveVector.normalized() * _playerSpeed * dt;
     position.clamp(Vector2.zero() + size / 2, game.canvasSize - size / 2);
 
-    final particleComponent = ParticleSystemComponent(
-      particle: Particle.generate(
-        count: 10,
-        lifespan: 0.1,
-        generator: (i) => AcceleratedParticle(
-          speed: (Vector2.random(Random()) - Vector2(0.5, -1)) * 500,
-          acceleration: (Vector2.random(Random()) - Vector2(0.5, -1)) * 500,
-          position: position.clone() + Vector2(0, size.y / 3),
-          child: CircleParticle(
-            radius: 1,
-            lifespan: 1,
-            paint: Paint()..color = Colors.white,
-          ),
-        ),
-      ),
-    );
+    if (inAir) {
+      _gravityVelocity += game.gravity * dt;
+      position.y += _gravityVelocity;
+      if (isFalling) {
+        current = PlayerState.falling;
+      }
+    }
 
-    game.add(particleComponent);
+    final belowGround = playerBottomYPos > game.groundLevel;
+    // If the player's new position would overshoot the ground level after
+    // updating its position we need to move the player up to the ground level
+    // again.
+    if (belowGround) {
+      position.y = game.groundLevel - size.y / 2;
+      _gravityVelocity = 0;
+      current = PlayerState.running;
+    }
+
+    _lastPosition.setFrom(position);
   }
 
   @override
@@ -59,25 +103,45 @@ class Player extends SpriteComponent
     super.onCollision(intersectionPoints, other);
 
     if (other is Enemy) {
-      health--;
+      health --;
 
       if (health == 0) {
         game.pauseEngine();
         game.overlays.add(GameScreen.lostDialogKey);
       }
     }
-
-    if (score > 20) {
-      game.pauseEngine();
-      game.overlays.add(GameScreen.winDialogKey);
-    }
   }
 
   void moveLeft() {
-    _moveVector = Vector2(-20, 0);
+    if (current != PlayerState.running) {
+      current = PlayerState.running;
+    }
+    final moveVector = game.canvasSize / 5;
+    moveVector.y = 0;
+    add(MoveEffect(-moveVector));
   }
 
   void moveRight() {
-    _moveVector = Vector2(20, 0);
+    if (current != PlayerState.running) {
+      current = PlayerState.running;
+    }
+    final moveVector = game.canvasSize / 5;
+    moveVector.y = 0;
+    add(MoveEffect(moveVector));
+  }
+
+  void jump(Vector2 jumpVector) {
+    if (current != PlayerState.jumping) {
+      current = PlayerState.jumping;
+    }
+    // Since `towards` is normalized we need to scale (multiply) that vector by
+    // the length that we want the jump to have.
+    final moveEffect = MoveEffect(jumpVector);
+
+    // We only allow jumps when the player isn't already in the air.
+    if (!inAir) {
+      //game.audioController.playSfx(SfxType.jump);
+      add(moveEffect);
+    }
   }
 }

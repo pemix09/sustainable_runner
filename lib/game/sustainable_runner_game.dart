@@ -17,6 +17,10 @@ class SustainableRunner extends FlameGame<GameWorld>
     with HasCollisionDetection, HorizontalDragDetector, TapDetector {
   late SpriteSheet _spriteSheet;
   late TextComponent _playerScore;
+  final scoreNotifier = ValueNotifier(0);
+  late final DateTime timeStarted;
+  final double gravity = 30;
+  late final double groundLevel;
 
   ComponentManager? get componentManager =>
       children.whereType<ComponentManager>().firstOrNull;
@@ -25,10 +29,13 @@ class SustainableRunner extends FlameGame<GameWorld>
       : super(
           world: GameWorld(),
           camera: CameraComponent.withFixedResolution(width: 1600, height: 720),
-        );
+        ) {
+  }
 
   @override
   Future<void> onLoad() async {
+    groundLevel = size.y - 20;
+    timeStarted = DateTime.now();
     const spriteSheetFileName = 'simpleSpace_sheet@2.png';
     await images.load(spriteSheetFileName);
 
@@ -47,6 +54,20 @@ class SustainableRunner extends FlameGame<GameWorld>
     );
 
     add(_playerScore);
+
+    scoreNotifier.addListener(() {
+      if (scoreNotifier.value >= 20) {
+        final levelTime = (DateTime.now().millisecondsSinceEpoch -
+            timeStarted.millisecondsSinceEpoch) /
+            1000;
+
+        var levelCompletedIn = levelTime.round();
+        print('Level completed in: $levelCompletedIn');
+
+        pauseEngine();
+        overlays.add(GameScreen.winDialogKey);
+      }
+    });
   }
 
   @override
@@ -63,10 +84,7 @@ class SustainableRunner extends FlameGame<GameWorld>
   @override
   void onTapDown(TapDownInfo info) {
     super.onTapDown(info);
-
-    if (componentManager != null && componentManager!.isLoaded) {
-      componentManager!.shoot();
-    }
+    componentManager?.playerManager?.player?.jump(Vector2(0, -150));
   }
 
   @override
