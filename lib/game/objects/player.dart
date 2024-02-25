@@ -37,6 +37,8 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
 
   @override
   Future<void> onLoad() async {
+    await super.onLoad();
+
     if (position == Vector2.zero()) {
       position = Vector2(game.canvasSize.x / 2, 0);
     }

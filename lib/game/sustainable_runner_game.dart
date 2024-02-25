@@ -30,12 +30,8 @@ class SustainableRunner extends FlameGame<GameWorld>
   @override
   Future<void> onLoad() async {
     timeStarted = DateTime.now();
-    enemyManager = EnemyManager();
-    playerManager = PlayerManager();
-    trashManager = TrashManager();
-    add(enemyManager);
-    add(playerManager);
-    add(trashManager);
+    initializeManagers();
+    addManagers();
 
     _playerScore = TextComponent(
       text: 'Score: 0',
@@ -96,5 +92,16 @@ class SustainableRunner extends FlameGame<GameWorld>
   void onRemove() {
     overlays.remove(GameScreen.healthBar);
     overlays.remove(GameScreen.pauseButton);
+  }
+
+  void initializeManagers() {
+    enemyManager = EnemyManager();
+    playerManager = PlayerManager();
+    trashManager = TrashManager();
+  }
+  void addManagers() {
+    add(enemyManager);
+    add(playerManager);
+    add(trashManager);
   }
 }
